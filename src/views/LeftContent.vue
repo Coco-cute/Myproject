@@ -2,15 +2,18 @@
  <div id="left-pane">
   <ul>
     <li  v-for=" ( item, index ) in listitems" :key="index" >  
-      <span class="left-pane" @click="Leftchild(item,listitems)" :class="{leftpitch:item.clik}">
+      <span class="left-pane" @click="Leftchild(item,listitems)" >
         <span :class="item.icon"></span>
-        {{ item.name }}
+        <router-link :to="item.url" :class="{leftpitch:item.clik}">
+          {{ item.name }}
+        </router-link>
+        
         <b v-show="item.items.length" :class="{left_b_rotate:item.clik}">></b>
       </span>
       <ul>
         <li class="leftpanechid" v-for="(v,i) in item.items" :key="i" 
-          v-show="item.clik" :class="v.clik?'leftpitch':''" v-on:click="Leftchild(v,item.items)">
-          <router-link :to="item.url">{{v.name}}</router-link>
+          v-show="item.clik"  v-on:click="Leftchild(v,item.items)">
+          <router-link :to="v.url" :class="v.clik?'leftpitch':''">{{v.name}}</router-link>
          </li>
       </ul>
     </li>
@@ -23,25 +26,34 @@ export default {
   data() {
    return {
      listitems: [
-       {name:'个人信息',url:'/myifmx',icon:'icon-delect', clik: false, items:[
-         {name:"简介",clik:true},{name:"简历",clik:false}]},
-       {name:'我的文档',url:'/docum',icon:'icon-document', clik: false,items:[
-         {name:"Java",clik:true},{name:"Java Script",clik:false},{name:"css",clik:false}]},
-       {name:'音乐列表',url:'/musicbox',icon:'icon-music', clik: false,items:[]},
-       {name:'精彩视频',url:'/videobox',icon:'icon-video', clik: false,items:[]},
-       {name:'休闲游戏',url:'/games',icon:'icon-game', clik: true,items:[
-        {name:"黑白块",clik:true},{name:"英雄打怪兽",clik:false}]},
+       {name:'个人信息',url:'/my_message/jj',icon:'icon-delect', clik: false, items:[
+         {name:"个人简介",url:'/my_message/jj',clik:true},{name:"获奖记录",url:'/my_message/hj',clik:false},{name:"工作经历",url:'/my_message/jl',clik:false}]},
+       {name:'我的博客',url:'/docum/jd',icon:'icon-document', clik: false,items:[
+         {name:"前端",url:'/docum/jd',clik:true},{name:"c/c++",url:'/docum/c',clik:false},{name:"后端",url:'/docum/hd',clik:false}]},
+       {name:'我的音乐',url:'/musics',icon:'icon-music', clik: false,items:[]},
+       {name:'游戏视频',url:'/videos',icon:'icon-video', clik: false,items:[]},
+       {name:'小游戏',url:'/games/bw',icon:'icon-game', clik: true,items:[
+        {name:"黑白块",url:'/games/bw',clik:true},{name:"英雄抓怪兽",url:'/games/yx',clik:false}]},
      ]
    }
   },
   methods:{
+   //Leftchild设置点击及相关二级导航的样式
    Leftchild(flag,flags){
-     flags.forEach((item)=>{
+     let len=Object.keys(flag).length;
+     //判断是否是一级导航点击，还是二级导航点击，若为一级，则重置二级导航click属性
+     if(len==5 && flag.items.length){
+       Flay(flag.items);
+       flag.items[0].clik=true;
+     }
+     function Flay(_flags){
+      _flags.forEach((item)=>{
        item.clik=false;
-     })
+       })
+     }
+     Flay(flags);
      flag.clik=true;
-     console.log(flag.clik)
-   }
+   },
  }
 }
 </script>
@@ -54,8 +66,7 @@ export default {
   width: 150px;
   height: 100%;
   background-color: rgba(255,255,255,0.8);
-  background-image: linear-gradient(to right,white,rgba(255,255,255,0.8),rgb(195, 255, 252),rgb(227, 253, 227),rgb(195, 255, 252),rgba(255,255,255,0.8),white);
-  border:1px solid red;
+  background-image: linear-gradient(to right,rgb(195, 255, 252),rgba(255,255,255,0.8),white,rgb(243, 243, 196),white,rgba(255,255,255,0.8),rgb(195, 255, 252));
 }
 
 #left-pane>ul:first-child>li{
@@ -71,7 +82,7 @@ export default {
 //左窗格的箭头符号
 .left-pane:nth-child(1) b{
   margin-left: 3px;
-  color: rgba(241, 57, 44, 0.5);
+  color: rgba(255, 110, 100, 0.904);
   
 }
 
@@ -84,8 +95,8 @@ export default {
 } 
 //选中时的样式
 .leftpitch{
-  color:rgb(10, 86, 226);
-  border-bottom: 2px solid rgb(10, 86, 226);
+  color:rgb(252, 115, 24);
+  border-bottom: 2px solid rgb(93, 148, 21);
 }
 .show{
   display: inline-block;

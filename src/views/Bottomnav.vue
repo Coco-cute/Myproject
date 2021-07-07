@@ -7,9 +7,9 @@
         <label>企业QQ: {{ contacts.qq }}</label> 
         <label>私人微信: {{ contacts.vx }}</label> 
         <label>
-          github:
-          <a :href="contacts.github" target="_blank">
-            {{ contacts.github }}
+          e-mail:
+          <a href="https://email.163.com/" target="_blank">
+            {{ contacts['e-mail'] }}
           </a>
         </label>
         
@@ -18,10 +18,15 @@
       <span class="address mesage_init" >
         <label title="地址">
           <b>详细地址:</b>
-          <u>
+          <u style="font-size: 24px;" :title="contacts.address">
             {{ contacts.address }}
           </u>
-          
+        <label>
+          <br>  <b>github:</b>
+          <a :href="contacts.github" target="_blank">
+            {{ contacts.github }}
+          </a>
+        </label>
         </label> 
         <label title="反馈">
           <a href="#">bug反馈/忠告建议/内容投诉</a>
@@ -139,12 +144,13 @@ import {Map} from '../map';
     margin:0 3%;
     
   }
-  .address>label:first-child{
+  .address>label{
+    align-self: flex-start;
     top: 15%;
     text-indent: 20px;
   }
   .address>label:last-child{
-    margin-top:20%;
+    margin-top:2%;
   }
 
   #map{

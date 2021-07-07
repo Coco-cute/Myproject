@@ -33,9 +33,9 @@
     data() {
       return {
         contacts: [
-          { phone: '2', qq: '', vx: '', github: '', address: '', }
+          { phone: '2', qq: '', vx: '', github: '', address: '', 'e-mail': '' }
         ],
-        message: ['13857592916', '2936756243', 'CH-sixsixsix', 'https://github.com/Coco-cute/Myproject.git', '深圳市龙华区下油松新村45号楼'],
+        message: ['13857592916', '2936756243', 'CH-sixsixsix', 'https://github.com/Coco-cute/Myproject.git', '深圳市龙华区下油松新村45号楼' ,'cjl13857592916@163.com'],
       }
     },
     methods: {
