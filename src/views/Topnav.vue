@@ -141,15 +141,17 @@
   .setchid>li {
     // overflow:hidden;/* 内容超出宽度时隐藏超出部分的内容 */
     // text-overflow:ellipsis;/* 当对象内文本溢出时显示省略标记(...) ；需与overflow:hidden;一起使用。*/
+    position: relative;
     width: fit-content;
     height: 20px;
     color: white;
+    background-color: rgb(59, 58, 58);
     margin-left: 50%;
     font-size: 16px;
     border-bottom: 1px solid wheat;
     cursor: pointer;
     box-sizing: border-box;
-
+    z-index: 5;
   }
 
   .setchid>li:hover {

@@ -66,6 +66,13 @@ export default {
                 volumetit:['音量','静音'],
                 volumes: 0,
             },
+
+            temps:{//临时变量
+                cuurent:0,//统计歌曲Index
+                isclick: true,//防止按钮点击过快或连续点击
+                trim: null,//计时器
+                pai_flay: 0//判断
+            }
         }
     },
     watch:{
@@ -74,228 +81,227 @@ export default {
             handler(newVal){
                 console.log('监听')
                 console.log(newVal);
-              } 
+            },
         },
-        nowurl:null,
     },
     computed:{
-        Getkj4(){
+        Getkj4(){ //控件4状态
             return 'aud1_kj4_'+this.objstaus.sincycle;
+        },
+        labels(){
+            // 全局函数
+            return {
+                aud1: document.getElementById('aud1'),//audio播放控件
+                musname: document.getElementById('txt1'),//歌名
+                mususer: document.getElementById('txt2'),//歌手
+                mustime: document.getElementById('txt3'),//时间
+                _rotate: document.getElementsByClassName('backaud')[0],//旋转图片
+                audsize0: document.getElementsByClassName('aud1_size')[0],//音量0
+                audsize: document.getElementsByClassName('aud1_size')[1],//音量1
+                topmusic: document.getElementsByClassName('aud1_kj1')[0],//上一首
+                topmusic1: document.getElementsByClassName('aud1_kj1')[1],//上一首
+                pl: document.getElementsByClassName('aud1kj')[1],//播放
+                plt: document.getElementsByClassName('aud1kj')[4],//播放
+                nextmusic: document.getElementsByClassName('aud1_kj3')[0],//下一首
+                nextmusic1: document.getElementsByClassName('aud1_kj3')[1],//下一首
+                farmer: document.getElementsByClassName('jindu_farmery')[0],//有效进度条
+                unfarmer: document.getElementsByClassName('aud1_jindu')[0],//无效进度条
+                pai: document.getElementsByClassName('aud1_jindu_pai')[0],//圆点位置
+                sp: document.getElementsByClassName('aud1kj')[6],//播放顺序
+                stp: document.getElementsByClassName('aud1_kj5')[0],//停止
+                volumec: document.getElementsByClassName('aud1kj')[8],//静音
+            }
         },
     },
     methods: {
-
-
-        
-        Oload(){
-            // 全局函数
-            let aud1=document.getElementById('aud1'),//audio播放控件
-                musname=document.getElementById('txt1'),//歌名
-                mususer=document.getElementById('txt2'),//歌手
-                mustime=document.getElementById('txt3'),//时间
-                _rotate=document.getElementsByClassName('backaud')[0].style,//旋转图片
-                objstaus=this.objstaus,//状态库
-                list=this.list,//歌曲库
-                cuurent=0,//统计歌曲Index
-                isclick=true,//防止按钮点击过快或连续点击
-                trim,//计时器
-                pai_flay=0;//判断
-            
-
-
-            let audsize0=document.getElementsByClassName('aud1_size')[0],//音量0
-                audsize=document.getElementsByClassName('aud1_size')[1],//音量1
-                topmusic=document.getElementsByClassName('aud1_kj1')[0],//上一首
-                topmusic1=document.getElementsByClassName('aud1_kj1')[1],//上一首
-                pl=document.getElementsByClassName('aud1kj')[1],//播放
-                plt=document.getElementsByClassName('aud1kj')[4],//播放
-                nextmusic=document.getElementsByClassName('aud1_kj3')[0],//下一首
-                nextmusic1=document.getElementsByClassName('aud1_kj3')[1],//下一首
-                farmer=document.getElementsByClassName('jindu_farmery')[0],//有效进度条
-                unfarmer=document.getElementsByClassName('aud1_jindu')[0],//无效进度条
-                pai=document.getElementsByClassName('aud1_jindu_pai')[0],//圆点位置
-                sp=document.getElementsByClassName('aud1kj')[6],//播放顺序
-                stp=document.getElementsByClassName('aud1_kj5')[0],//停止
-                volumec=document.getElementsByClassName('aud1kj')[8];//静音
-                
-
+        InitClick(){
             // 按钮单机事件
-            audsize0.addEventListener('click',Setyl);//音量
-            audsize.addEventListener('click',Setyl);
-            topmusic.addEventListener('click',function(){//上一首
-                SwitchSong(-1);
+            this.labels.audsize0.addEventListener('click',this.Setyl);//音量
+            this.labels.audsize.addEventListener('click',this.Setyl);
+            this.labels.topmusic.addEventListener('click',()=>{//上一首
+                this.SwitchSong(-1);
             });
-            topmusic1.addEventListener('click',function(){
-                SwitchSong(-1);
+            this.labels.topmusic1.addEventListener('click',()=>{
+                this.SwitchSong(-1);
             });
-            nextmusic.addEventListener('click',function(){//下一首
-                SwitchSong(1);
+            this.labels.nextmusic.addEventListener('click',()=>{//下一首
+                this.SwitchSong(1);
             });
-            nextmusic1.addEventListener('click',function(){
-                SwitchSong(1);
+            this.labels.nextmusic1.addEventListener('click',()=>{
+                this.SwitchSong(1);
             });
-            pl.addEventListener('click',Play);//播放
-            plt.addEventListener('click',Play);
-            sp.addEventListener('click',Kj4status);//播放顺序
-            stp.addEventListener('click',Stop);//静止
-            volumec.addEventListener('click',VolumeC);//静音
-            pai.addEventListener('mousedown',function(){
+            this.labels.pl.addEventListener('click',this.Play);//播放
+            this.labels.plt.addEventListener('click',this.Play);
+            this.labels.sp.addEventListener('click',this.Kj4status);//播放顺序
+            this.labels.stp.addEventListener('click',this.Stop);//静止
+            this.labels.volumec.addEventListener('click',this.VolumeC);//静音
+            this.labels.pai.addEventListener('mousedown',()=>{
                 
-                pai_flay++;
-                unfarmer.addEventListener('mousemove',function(e){
-                    if(!pai_flay)return;
+                this.temps.pai_flay++;
+                this.labels.unfarmer.addEventListener('mousemove',(e)=>{
+                    if(!this.temps.pai_flay)return;
                     let x=e.offsetX;
                     if(x<0)x=0;
                     else if(x>95)x=95;
-                    pai.style.left=x+'px';
+                    this.labels.pai.style.left=x+'px';
                 })
 
-                window.addEventListener('mouseup',function(){
-                    if(!pai_flay)return;
-                    pai_flay=0;
-                    let x= pai.style.left,
-                        s=aud1.currentTime/aud1.duration;
-                    farmer.style.width=x;
+                window.addEventListener('mouseup',()=>{
+                    if(!this.temps.pai_flay)return;
+                    this.temps.pai_flay=0;
+                    let x= this.labels.pai.style.left;
+                    this.labels.farmer.style.width=x;
                     
-                    let y=Math.floor(parseInt(x)*aud1.duration);
-                    aud1.currentTime=y/100;
-                    Gettime();
+                    let y=Math.floor(parseInt(x)*this.labels.aud1.duration);
+                    this.labels.aud1.currentTime=y/100;
+                    this.Gettime();
                 })
 
             })
-
-
-            aud1.addEventListener('ended',function(){
-                isclick=true;
-                SwitchSong(0)
+            this.labels.aud1.addEventListener('ended',()=>{
+                this.temps.isclick=true;
+                this.SwitchSong(0)
             });
+            this.Init();
+        },
 
-            Init();
-            // 停止
-            function Stop(){
-                objstaus.play=false;
-                _rotate.animationPlayState='paused';
-                aud1.pause();
-                aud1.currentTime=0;
-                clearInterval(trim);
-            };
-            function Init(){
-                let url=list[0].url;
-                aud1.src=url;
-            };
-            
-            //切歌
-            function SwitchSong(_flay){
-                if(!isclick)return;
-                isclick=false;
-                let _url=cuurent,
-                    rd=Math.floor(Math.random()*list.length);
-                _rotate.animationPlayState='paused';
-                
-                if(_flay<0){//上一首
-                    _url--;
-                    if(_url<0)_url=0
-                }
-                else if(_flay>0){//下一首
-                    _url++;
-                    if(_url>=list.length)_url=list.length-1
-                } else { //其它
-                    if(objstaus.sincycle==3){
-                        _url=_flay+1;
-                    } else if(objstaus.sincycle==2) {
-                        _url=rd;
-                    }
-                }
-                cuurent=_url;
-                aud1.src=list[_url].url;
-                objstaus.play=!objstaus.play;
-                setTimeout(()=>{isclick=true},1000);//切歌一秒只准一次；
-                Play();
-            };
-            //获取时间
-            function Gettime(){
-                let _end=Math.max(1,aud1.duration),
-                    _sta=aud1.currentTime,
-                    _sor=Math.floor(_sta/_end*100);
-                mustime.innerHTML=TimeSM(_sta)+'/'+TimeSM(_end);
-                Timejd(_sor);
+        //没有歌时
+        Oerro(){
+            let flay=false;
+            if(!this.list || !this.list.length){
+                alert('请先添加歌曲!')
             }
+            else flay=true
+            return flay
+        },
+        // 停止
+        Stop(){
+            this.objstaus.play=false;
+            this.labels._rotate.style.animationPlayState='paused';
+            this.labels.aud1.pause();
 
-            //音乐播放
-            function Play(){
-                if(list.length==0){console.log('你还未添加歌曲');return 0}
-                objstaus.play=!objstaus.play;
-                musname.innerHTML=list[cuurent].name;
-                mususer.innerHTML=list[cuurent].user;
-
-                if( objstaus.play){
-                    aud1.play();
-                    clearInterval(trim);
-                    trim=setInterval(Gettime,900);
-                    _rotate.animationPlayState='running';
-                } else {
-                    aud1.pause();
-                    clearInterval(trim);
-                    _rotate.animationPlayState='paused';
+            this.labels.aud1.currentTime=0;
+            this.Gettime();
+            clearInterval(this.temps.trim);
+        },
+        
+        Init(){
+            if(!this.Oerro())return;
+            let url=this.list[0].url;
+            this.labels.aud1.src=url;
+            this.objstaus.play=false;
+        },
+        
+        //切歌
+        SwitchSong(_flay){
+            if(!this.temps.isclick || !this.Oerro())return;
+            this.temps.isclick=false;
+            let _url=this.temps.cuurent,
+                rd=Math.floor(Math.random()*this.list.length);
+            this.labels._rotate.style.animationPlayState='paused';
+            
+            if(_flay<0){//上一首
+                _url--;
+                if(_url<0)_url=0
+            }
+            else if(_flay>0){//下一首
+                _url++;
+                if(_url>=this.list.length)_url=this.list.length-1
+            } else { //其它
+                if(this.objstaus.sincycle==2){
+                   _url=rd;
+                } else if(this.objstaus.sincycle==3) {
+                    _url=_flay+1;
                 }
+            }
+            this.temps.cuurent=_url;
+            this.labels.aud1.src=this.list[_url].url;
+            this.objstaus.play=!this.objstaus.play;
+            setTimeout(()=>{this.temps.isclick=true},1000);//切歌一秒只准一次；
+            this.Play();
+        },
+        //获取时间
+        Gettime(){
+            let _end=Math.max(1,this.labels.aud1.duration),
+                _sta=this.labels.aud1.currentTime,
+                _sor=Math.floor(_sta/_end*100);
+            this.labels.mustime.innerHTML=this.TimeSM(_sta)+'/'+this.TimeSM(_end);
+            this.Timejd(_sor);
+        },
 
-            };
-
-            // 指定播放顺序
-            function Kj4status(){
-                objstaus.sincycle=objstaus.sincycle%3+1;
-            };
-
-            // 音量是否静音
-            function VolumeC(){
-                if(objstaus.volumee){
-                    objstaus.volumes=aud1.volume*100;
-                    objstaus.volumee=false;
-                    aud1.volume=0;
-                    
-                } else {
-                    aud1.volume=objstaus.volumes/100;
-                    objstaus.volumee=true;
-                }
-                audsize.style.width=aud1.volume*100+'px';
-                console.log('上一次音量为:' +objstaus.volumes);
-            };
-
-            // 设置音量
-            function Setyl(e){
-                let w=e.offsetX;
-                objstaus.volumee=w>1;
-                audsize.style.width=w+'px';
-                aud1.volume=w/100;
-                objstaus.volumes=w;
-            };
-
-            function TimeSM(otm){//时间秒转换为分
-                let x=Math.floor(otm/60),
-                    y=Math.floor(otm%60);
-                if(x<10)x='0'+x;
-                if(y<10)y='0'+y;
-                return x+':'+y;
-            };
-            //进度条
-            function Timejd(flay){
-                farmer.style.width=flay+'px';
-                pai.style.left=flay>90?'90':flay+'px';
+        //音乐播放
+        Play(){
+            if(!this.Oerro()) return;
+            if( !this.objstaus.play){
+                this.labels.musname.innerHTML=this.list[this.temps.cuurent].name;
+                this.labels.mususer.innerHTML=this.list[this.temps.cuurent].user;                
+                this.labels.aud1.play();
+                clearInterval(this.temps.trim);
+                this.temps.trim=setInterval(this.Gettime,900);
+                this.labels._rotate.style.animationPlayState='running';
+                this.objstaus.play=true;
+            } else {
+                this.labels.aud1.pause();
+                clearInterval(this.temps.trim);
+                this.labels._rotate.style.animationPlayState='paused';
+                this.objstaus.play=false;
             }
 
         },
+
+        // 指定播放顺序
+        Kj4status(){
+            this.objstaus.sincycle=this.objstaus.sincycle%3+1;
+        },
+
+        // 音量是否静音
+        VolumeC(){
+            if(this.objstaus.volumee){
+                this.objstaus.volumes=this.labels.aud1.volume*100;
+                this.objstaus.volumee=false;
+                this.labels.aud1.volume=0;
+                
+            } else {
+                this.labels.aud1.volume=this.objstaus.volumes/100;
+                this.objstaus.volumee=true;
+            }
+            this.labels.audsize.style.width=this.labels.aud1.volume*100+'px';
+            console.log('上一次音量为:' +this.objstaus.volumes);
+        },
+
+        // 设置音量
+        Setyl(e){
+            let w=e.offsetX;
+            this.objstaus.volumee=w>1;
+            this.labels.audsize.style.width=w+'px';
+            this.labels.aud1.volume=w/100;
+            this.objstaus.volumes=w;
+        },
+
+        TimeSM(otm){//时间秒转换为分
+            let x=Math.floor(otm/60),
+                y=Math.floor(otm%60);
+            if(x<10)x='0'+x;
+            if(y<10)y='0'+y;
+            return x+':'+y;
+        },
+        //进度条
+        Timejd(flay){
+            this.labels.farmer.style.width=flay+'px';
+            this.labels.pai.style.left=flay>90?'90':flay+'px';
+        },
+
         Imgplay(_src){
-            let aud1=document.getElementById('aud1');//audio播放控件
-            console.log(_src);
-            aud1.src=this.list[_src].url;
-            this.objstaus.play=true;
-            aud1.play();
+            this.labels.aud1.src=this.list[_src].url;
+            this.temps.cuurent=_src;
+            this.objstaus.play=false;
+            this.Play();
         }
         
     },
     mounted(){
         // this.Musiclist();
-        this.Oload();
+        this.InitClick()
         
     }
 }

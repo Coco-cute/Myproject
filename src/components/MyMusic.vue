@@ -17,7 +17,7 @@ import Tab from './components/Table.vue'
 export default {
  data(){
    return{
-     list1: nul,
+     list1: Tab.data().items,
    }
  },
  
@@ -28,9 +28,6 @@ export default {
  methods: {
    Playl(_url){
      this.$refs.child.Imgplay(_url);
-    //  let x=this.$refs.aud1;
-    //  x.src=_url;
-
    }
  },
  created(){

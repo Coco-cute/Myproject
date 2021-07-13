@@ -7,7 +7,7 @@
             <th>歌手</th>
             <th>大小</th>
             <th>
-                <input type="checkbox" v-model="checkAll" @change="Chekpd">全选
+                <input type="checkbox" v-model="checkAll" :disabled="this.items.length==0" @change="Chekpd">全选
             </th>
             <th>
                 编辑
